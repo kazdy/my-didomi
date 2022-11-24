@@ -6,7 +6,7 @@ from pyspark.sql.types import StringType, StructField, StructType
 from chispa.schema_comparer import assert_schema_equality_ignore_nullable
 from chispa.dataframe_comparer import assert_df_equality
 
-from src.transform import deduplicate_by_event_id, flatten_user, convert_user_token_from_json, get_user_consent_status
+from src.transform import deduplicate_by_event_id, flatten_user, convert_user_token_from_json, get_datehour_from_datetime, get_user_consent_status
 from src.schemas import token_column_schema
 
 
@@ -89,6 +89,16 @@ def test_get_user_consent_status(spark):
     assert actual_df.select("user_consent").collect()[0][0] == True
     assert actual_df_1.select("user_consent").collect()[0][0] == False
     assert actual_df_2.select("user_consent").collect()[0][0] == False
+
+
+def test_get_datehour_from_datetime(spark):
+    input_data = [{"datetime": "2021-01-23 10:22:28"}]
+
+    sc = spark.sparkContext
+    df = spark.read.json(sc.parallelize([input_data]))
+
+    df = get_datehour_from_datetime(df)
+    assert df.select("datehour").collect()[0][0] == "2021-01-23-10"
 
 
 @ pytest.fixture
