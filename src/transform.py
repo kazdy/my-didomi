@@ -1,5 +1,5 @@
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import from_json
+from pyspark.sql.functions import from_json, size, when
 from schemas import token_column_schema
 
 
@@ -22,8 +22,15 @@ def convert_user_token_from_json(df: DataFrame) -> DataFrame:
     return df
 
 
+def get_user_consent_status(df: DataFrame) -> DataFrame:
+    df = df.withColumn("user_consent", when(size(df.user_token.purposes.enabled) > 0, True)
+                       .otherwise(False))
+    return df
+
+
 def transform(df: DataFrame) -> DataFrame:
     df = deduplicate_by_event_id(df)
     df = flatten_user(df)
     df = convert_user_token_from_json(df)
+    df = get_user_consent_status(df)
     return df
