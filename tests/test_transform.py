@@ -19,7 +19,7 @@ def test_transform_deduplicate(spark):
     df = spark.read.json(sc.parallelize([input_data]))
     df = deduplicate_by_event_id(df)
 
-    assert df.count() == 2
+    assert df.select("id").distinct().count() == 2
 
 
 @pytest.fixture
