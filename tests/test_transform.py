@@ -1,11 +1,13 @@
 import pytest
+from pyspark.sql.types import StringType, StructField, StructType
 from conftest import spark
-import chispa
+from chispa.schema_comparer import assert_schema_equality_ignore_nullable
+from chispa.dataframe_comparer import assert_df_equality
 
-from src.transform import deduplicate_by_event_id
+from src.transform import deduplicate_by_event_id, flatten_user
 
 
-def test_transform_deduplicate(spark):
+def test_transform_deduplicate_by_event_id(spark):
     input_data = [
         {"id": "05551f56-2d63-477f-91cb-e286b1df16fc", "datetime": "2021-01-23 10:22:28", "domain": "www.domain-A.eu", "type": "consent.given", "user": {"id": "1705c98b-367c-6d09-a30f-da9e6f4da700",
                                                                                                                                                          "country": "FR", "token": "{\"vendors\":{\"enabled\":[\"Vendor1\"],\"disabled\":[]},\"purposes\":{\"enabled\":[\"analytics\"],\"disabled\":[]}}"}},
@@ -22,6 +24,27 @@ def test_transform_deduplicate(spark):
     assert df.select("id").distinct().count() == 2
 
 
-@pytest.fixture
+def test_transform_flatten_user(spark):
+    input_data = [
+        {"user": {"id": "1705c98b-367c-6d09-a30f-da9e6f4da700",
+                  "country": "FR", "token": "string_token_value"}}
+    ]
+
+    sc = spark.sparkContext
+    df = spark.read.json(sc.parallelize([input_data]))
+    actual_df = flatten_user(df)
+
+    expected_schema = StructType([
+        StructField("user_id", StringType(), True),
+        StructField("user_country", StringType(), True),
+        StructField("user_token", StringType(), True)])
+    expected_data = [("1705c98b-367c-6d09-a30f-da9e6f4da700", "FR", "string_token_value")]
+    expected_df = spark.createDataFrame(expected_data, expected_schema)
+
+    assert_schema_equality_ignore_nullable(expected_schema, actual_df.schema)
+    assert_df_equality(expected_df, actual_df)
+
+
+@ pytest.fixture
 def test_transform(spark):
     pass
