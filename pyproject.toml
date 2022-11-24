@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["kazdy <d.kazmirski@gmail.com>"]
 readme = "README.md"
-packages = [{include = "my_didomi"}]
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -19,3 +19,8 @@ flake8 = "^6.0.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src", "tests"]
+testpaths = ["tests"]
+
