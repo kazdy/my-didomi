@@ -4,7 +4,8 @@ from conftest import spark
 from chispa.schema_comparer import assert_schema_equality_ignore_nullable
 from chispa.dataframe_comparer import assert_df_equality
 
-from src.transform import deduplicate_by_event_id, flatten_user
+from src.transform import deduplicate_by_event_id, flatten_user, convert_user_token_from_json
+from src.schemas import token_column_schema
 
 
 def test_transform_deduplicate_by_event_id(spark):
@@ -38,11 +39,28 @@ def test_transform_flatten_user(spark):
         StructField("user_id", StringType(), True),
         StructField("user_country", StringType(), True),
         StructField("user_token", StringType(), True)])
-    expected_data = [("1705c98b-367c-6d09-a30f-da9e6f4da700", "FR", "string_token_value")]
+    expected_data = [("1705c98b-367c-6d09-a30f-da9e6f4da700",
+                      "FR", "string_token_value")]
     expected_df = spark.createDataFrame(expected_data, expected_schema)
 
     assert_schema_equality_ignore_nullable(expected_schema, actual_df.schema)
     assert_df_equality(expected_df, actual_df)
+
+
+def test_transform_flatten_user(spark):
+    input_data = [
+        {"user_token": "{\"vendors\":{\"enabled\":[\"Vendor1\"],\"disabled\":[]},\"purposes\":{\"enabled\":[\"analytics\"],\"disabled\":[]}}"},
+        {"user_token": "{\"vendors\":{\"enabled\":[],\"disabled\":[]},\"purposes\":{\"enabled\":[],\"disabled\":[]}}"},
+        {"user_token": "{\"vendors\":{\"enabled\":[],\"disabled\":[\"Vendor1\"]},\"purposes\":{\"enabled\":[],\"disabled\":[\"analytics\"]}}"},
+    ]
+
+    sc = spark.sparkContext
+    df = spark.read.json(sc.parallelize([input_data]))
+    actual_df = convert_user_token_from_json(df)
+
+    expected_schema = StructType(
+        [StructField("user_token", token_column_schema)])
+    assert_schema_equality_ignore_nullable(expected_schema, actual_df.schema)
 
 
 @ pytest.fixture
