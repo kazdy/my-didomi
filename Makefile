@@ -3,7 +3,7 @@ install:
 	poetry install --sync
 
 test:
-	poetry run pytest --cov=src tests/
+	poetry run pytest -rA -s --cov=src tests/
 
 package:
 	true

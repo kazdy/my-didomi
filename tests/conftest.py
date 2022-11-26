@@ -21,3 +21,7 @@ def spark():
         .config(conf=test_spark_conf())
         .getOrCreate()
     )
+
+@pytest.fixture
+def input_dataset_path():
+    return "file:///Users/kazdy/workspace/my-didomi/tests/data/input"
