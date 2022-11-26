@@ -1,5 +1,5 @@
 #!/bin/bash
-input=/Users/kazdy/workspace/my-didomi/tests/data/input/
+input=./tests/data/input/
 output=./output/
 filter=True
 
