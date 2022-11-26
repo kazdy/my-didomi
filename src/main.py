@@ -16,7 +16,7 @@ def main(input_path: str, output_path: str, partition_filter: str = 'True'):
 
     df = transform(df)
 
-    df.write.parquet(output_path)
+    df.write.mode("overwrite").parquet(output_path)
 
 
 if __name__ == "__main__":
