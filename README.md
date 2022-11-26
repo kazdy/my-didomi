@@ -14,7 +14,6 @@ Run tests:
 `make functional` - runs functional tests only
 `make e2e` - runs e2e tests only
 
-
 Run as spark program:
 `make run`
 

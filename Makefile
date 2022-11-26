@@ -18,5 +18,5 @@ package:
 	echo notimplemented
 
 run:
-	rm -rf ./run-output
+	rm -rf ./run
 	sh run.sh
