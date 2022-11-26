@@ -3,7 +3,20 @@ install:
 	poetry install --sync
 
 test:
-	poetry run pytest -rA -s --cov=src tests/
+	poetry run pytest -rA --cov=src -m "unit or functional or e2e" tests/
+
+unit:
+	poetry run pytest -rA --cov=src -m unit tests/
+
+functional:
+	pytest -rA --cov=src -m functional tests/
+
+e2e:
+	pytest -rA --cov=src -m e2e tests/
 
 package:
-	true
+	echo notimplemented
+
+run:
+	rm -rf ./run-output
+	sh run.sh

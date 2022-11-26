@@ -23,4 +23,8 @@ build-backend = "poetry.core.masonry.api"
 [tool.pytest.ini_options]
 pythonpath = [".", "src", "tests"]
 testpaths = ["tests"]
-
+markers = [
+    "unit: mark a test as a unittest.",
+    "functional: mark test as functional.",
+    "e2e: mark test as end to end."
+]

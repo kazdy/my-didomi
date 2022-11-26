@@ -24,4 +24,8 @@ def spark():
 
 @pytest.fixture
 def input_dataset_path():
-    return "file:///Users/kazdy/workspace/my-didomi/tests/data/input"
+    return "tests/data/input"
+
+@pytest.fixture
+def output_dataset_path():
+    return "tests/data/output"

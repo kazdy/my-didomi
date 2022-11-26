@@ -1,10 +1,31 @@
 # How to setup devenv and run tests?
 
-Install project dependencies:
+## Prerequisites
+Python 3.10 installed
+Poetry 1.2 [installed](https://python-poetry.org/docs/#installation)
+
+## Available commands
+Create venv and install project dependencies:
 `make install`
 
 Run tests:
-`make test`
+`make test` - runs all tests
+`make unit` - runs unit tests only
+`make functional` - runs functional tests only
+`make e2e` - runs e2e tests only
+
+
+Run as spark program:
+`make run`
+
+Run as python app:
+`poetry run src/main.py --input_path ./tests/data/input/ --output_path ./run-output/ --partition_filter True`
+
+Run as shell app:
+`sh run.sh`
+
+Run as shell app with args:
+`sh run.sh ./tests/data/input/ ./run-output/ True`
 
 ## Requirements
 In some specific cases, companies need to collect consent from consumers before using their data. For instance, app users might need to explicitly consent to share their geolocation before a company can use it for advertising.
